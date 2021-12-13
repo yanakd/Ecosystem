@@ -9,3 +9,6 @@ class Carnivore(Animals):
 
     def reproduction(self):
         pass
+
+    def draw():
+        pygame.draw.polygon(surface=screen, color=(255, 255, 255), points=[x, y, z])
