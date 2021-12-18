@@ -3,21 +3,19 @@ import sys, random, pygame
 from pygame.locals import *
 from abc import ABC, abstractmethod
 
-# Initialise pygame
+#------------------------------------------Initialise pygame----------------------------
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-# Set up the display
+#------------------------------------------Set up the display---------------------------
 WIDTH = 640 #game window width
 HEIGHT = 480 #game window height
 FPS = 60 #game's speeds
-#Pixsize = 2
 screen = pygame.display.set_mode((WIDTH, HEIGHT)) #set the game window
 pygame.display.set_caption("Darwin's Game")
 
 
-
-
+#-----------------------------------------Declaring colours------------------------------
 white = (255, 255, 255)
 blue = (0, 0, 255)
 red = (255, 0, 0)
@@ -25,6 +23,7 @@ green = (0, 255, 0)
 brown = (123, 63, 0)
 black = (0, 0, 0)
 
+#------------------------------Lifeforms is the bas class from which every living being devolves from--------------
 class lifeforms(ABC):
     def __init__(self, hp : int, dead : bool, nrj : int, form : bool, isCaca : bool):
         #variables needed by all lifeforms
@@ -50,6 +49,7 @@ class lifeforms(ABC):
         pass
 
 
+#--------------------------------Animals (along with Plants are the 2 main )
 class Animals(lifeforms):
     def __init__(self):
         super().__init__(10, False, 10, True, False)
@@ -58,7 +58,6 @@ class Animals(lifeforms):
         self.speed = random.randrange(2,5) #animal speed
         self.move = [None, None] #realtive x and y coordinates to move to
         self.direction = None #movement direction
-
 
     def bouffe(self):
         pass
@@ -77,8 +76,7 @@ class Animals(lifeforms):
         pass
 
 
-
-
+#-------------------------------------------------Predators-----------------------------------------
 class Carnivore(pygame.sprite.Sprite, Animals):
     def __init__(self, width, height, pos_x, pos_y, color):
         pygame.sprite.Sprite.__init__(self)
@@ -89,18 +87,26 @@ class Carnivore(pygame.sprite.Sprite, Animals):
         self.rect.center = [pos_x, pos_y]
         self.move = [None, None]
         self.direction = None
-        self.col_rectC = pygame.Rect(self.rect.x-10, self.rect.y-10, width+20, height+20)
+        self.zoneVisionC = pygame.Rect(self.rect.x-10, self.rect.y-10, width+20, height+20)
+
+    def visionZoneC(self, i : int):
+        if i == 1:
+            return self.zoneVisionC.top
+        if i == 2:
+            return self.zoneVisionC.bottom
+        if i == 3:
+            return self.zoneVisionC.left
+        if i == 4:
+            return self.zoneVisionC.right
 
     def chasser(self):
-        collision_tolerance = 10
-
-        if abs(Herbivore.col_rectH.top - self.col_rectC.bottom) < collision_tolerance:
-            self.col_rectC.x = Herbivore.col_rectH.x
-            self.col_rectC.y = Herbivore.col_rectH.y
-            print('in pursuit!')
+        pass
 
     def reproduction(self):
         pass 
+
+    def getSpeed(self):
+        return self.rect.x, self.rect.y
 
     def update(self):
         directions = {"S":((-1,2),(1,self.speed)),"SW":((-self.speed,-1),(1,self.speed)),"W":((-self.speed,-1),(-1,2)),"NW":((-self.speed,-1),(-self.speed,-1)),"N":((-1,2),(-self.speed,-1)),"NE":((1,self.speed),(-self.speed,-1)),"E":((1,self.speed),(-1,2)),"SE":((1,self.speed),(1,self.speed))} #((min x, max x)(min y, max y))
@@ -129,15 +135,15 @@ class Carnivore(pygame.sprite.Sprite, Animals):
             self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
         if self.move[0] != None: #add the relative coordinates to the cells coordinates
             self.rect.x += self.move[0]
-            self.col_rectC.x += self.move[0]
+            self.zoneVisionC.x += self.move[0]
             self.rect.y += self.move[1]
-            self.col_rectC.y += self.move[1]
+            self.zoneVisionC.y += self.move[1]
  
-        pygame.draw.rect(screen, (0, 255, 0), self.col_rectC)
+        pygame.draw.rect(screen, (0, 255, 0), self.zoneVisionC)
         self.chasser()
 
         
-
+#--------------------------------------------Prey--------------------------------------------------
 class Herbivore(pygame.sprite.Sprite, Animals):
     def __init__(self, width, height, pos_x, pos_y, color):
         pygame.sprite.Sprite.__init__(self)
@@ -148,9 +154,32 @@ class Herbivore(pygame.sprite.Sprite, Animals):
         self.rect.center = [pos_x, pos_y]
         self.move = [None, None]
         self.direction = None
-        self.col_rectH = pygame.Rect(self.rect.x-10, self.rect.y-10, width+20, height+20)
+        self.width = width
+        self.height = height
+        self.zoneVisionH = pygame.Rect(self.rect.x-10, self.rect.y-10, self.width+20, self.height+20)
+        
+    def visionZoneH(self, i : int):
+        if i == 1:
+            return self.zoneVisionH.top
+        if i == 2:
+            return self.zoneVisionH.bottom
+        if i == 3:
+            return self.zoneVisionH.left
+        if i == 4:
+            return self.zoneVisionH.right
+        
+    def getSpeed(self):
+        return self.rect.x, self.rect.y
+    
+    def chasserHerbe(self):
+        pass
 
+    def reproduction(self):
+        pass
 
+    def fuite(self):
+        pass
+    
     def update(self):
         directions = {"S":((-1,2),(1,self.speed)),"SW":((-self.speed,-1),(1,self.speed)),"W":((-self.speed,-1),(-1,2)),"NW":((-self.speed,-1),(-self.speed,-1)),"N":((-1,2),(-self.speed,-1)),"NE":((1,self.speed),(-self.speed,-1)),"E":((1,self.speed),(-1,2)),"SE":((1,self.speed),(1,self.speed))} #((min x, max x)(min y, max y))
         directionsName = ("S","SW","W","NW","N","NE","E","SE") #possible directions
@@ -178,38 +207,50 @@ class Herbivore(pygame.sprite.Sprite, Animals):
             self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
         if self.move[0] != None: #add the relative coordinates to the cells coordinates
             self.rect.x += self.move[0]
-            self.col_rectH.x += self.move[0]
+            self.zoneVisionH.x += self.move[0]
             self.rect.y += self.move[1]
-            self.col_rectH.y += self.move[1]
+            self.zoneVisionH.y += self.move[1]
  
-        pygame.draw.rect(screen, (0, 255, 0), self.col_rectH)
+        pygame.draw.rect(screen, (0, 255, 0), self.zoneVisionH)
     
-    def chasserHerbe(self):
-        if self.col_rectC.colliderect(Herbivore.col_rectH):
-            print('collision H')
 
-    def reproduction(self):
-        pass
 
-    def fuite(self):
-        pass
-
+#----------------------------------Groups----------------------------------------------------------
 carn_group = pygame.sprite.Group()
-carn = Carnivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), white)
-carn1 = Carnivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), white)
-carn_group.add(carn, carn1)
-
 herb_group = pygame.sprite.Group()
-herb = Herbivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), blue)
-herb1 = Herbivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), blue)
-herb_group.add(herb, herb1)
 
+#-------------------------Creating objetcs automatically------------------------------------------
+objC = list()
+for i in range(5):
+    objC.append(Carnivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), white))
+    carn_group.add(objC[i])
 
+objH = list()
+for i in range(5):
+    objH.append(Herbivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), blue))
+    herb_group.add(objH[i])
+ 
+#----------------------------------Collision--------------------------------------------------------
+collision_tolerance = 10
+#Repeat this for every animal
+def hunt():
+    max_len = len(objH) + len(objC)
+    for i in range(max_len):  #how to access object attribute of object inside list
+        if abs(dir(objH[1::].visionZoneH(1)) - dir(objC[::-1].visionZoneC(2))) < collision_tolerance:  #1:: => from 1 to end of list, ::-1 from end to start of list
+            setattr(dir(objC[::-1]), dir(objC[::-1].getSpeed()), dir(objH[::-1].getSpeed()))   #setattr(object, attribute to be changed, new attribute value)
+        if abs(objH[1::].visionZoneH(2) - objC[::-1].visionZoneC(1)) < collision_tolerance:
+            print('bottom top')
+        if abs(objH[1::].visionZoneH(4) - objC[::-1].visionZoneC(3)) < collision_tolerance:
+            print('left right')
+        if abs(objH[1::].visionZoneH(3) - objC[::-1].visionZoneC(4)) < collision_tolerance:
+            print('right left')
+
+#----------------------------------Mainloop----------------------------------------------------------
 def mainloop():
     while True:
         pygame.time.Clock().tick(FPS) #limit FPS
         for event in pygame.event.get():
-            if event.type == QUIT: #if pressing the X, quit the progra
+            if event.type == QUIT: #if pressing the X, quit the program
                 pygame.quit() #stop pygame
                 sys.exit() #stop the program
 
@@ -217,6 +258,7 @@ def mainloop():
         screen.fill(0)
         carn_group.update()
         herb_group.update()
+        hunt()
 
         #Draw/render
         carn_group.draw(screen)
