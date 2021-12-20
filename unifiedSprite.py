@@ -43,7 +43,8 @@ class lifeforms(ABC):
 
     #changes dead to true and calls devenirCaca() if needed
     def isDead(self):
-        pass
+        if self.hp == 0:
+            self.dead = True
 
     def devenirCaca(self):
         pass
@@ -79,6 +80,7 @@ class Animals(lifeforms):
 #-------------------------------------------------Predators-----------------------------------------
 class Carnivore(pygame.sprite.Sprite, Animals):
     def __init__(self, width, height, pos_x, pos_y, color):
+        Animals.__init__(self)
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
@@ -105,8 +107,23 @@ class Carnivore(pygame.sprite.Sprite, Animals):
     def reproduction(self):
         pass 
 
-    def getSpeed(self):
-        return self.rect.x, self.rect.y
+    def get_posX(self):
+        return self.rect.x
+    
+    def get_posY(self):
+        return self.rect.y
+
+    def set_x(self, value):
+        self.zoneVisionC.x = value
+
+    def set_y(self, value):
+        self.zoneVisionC.y = value
+
+    def get_x(self):
+        return self.zoneVisionC.x
+
+    def get_y(self):
+        return self.zoneVisionC.y
 
     def update(self):
         directions = {"S":((-1,2),(1,self.speed)),"SW":((-self.speed,-1),(1,self.speed)),"W":((-self.speed,-1),(-1,2)),"NW":((-self.speed,-1),(-self.speed,-1)),"N":((-1,2),(-self.speed,-1)),"NE":((1,self.speed),(-self.speed,-1)),"E":((1,self.speed),(-1,2)),"SE":((1,self.speed),(1,self.speed))} #((min x, max x)(min y, max y))
@@ -140,12 +157,13 @@ class Carnivore(pygame.sprite.Sprite, Animals):
             self.zoneVisionC.y += self.move[1]
  
         pygame.draw.rect(screen, (0, 255, 0), self.zoneVisionC)
-        self.chasser()
+        
 
         
 #--------------------------------------------Prey--------------------------------------------------
 class Herbivore(pygame.sprite.Sprite, Animals):
     def __init__(self, width, height, pos_x, pos_y, color):
+        Animals.__init__(self)
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
@@ -168,8 +186,23 @@ class Herbivore(pygame.sprite.Sprite, Animals):
         if i == 4:
             return self.zoneVisionH.right
         
-    def getSpeed(self):
-        return self.rect.x, self.rect.y
+    def get_posX(self):
+        return self.rect.x
+    
+    def get_posY(self):
+        return self.rect.y
+
+    def set_x(self, value):
+        self.zoneVisionH.x = value
+
+    def set_y(self, value):
+        self.zoneVisionH.y = value
+
+    def get_x(self):
+        return self.zoneVisionH.x
+
+    def get_y(self):
+        return self.zoneVisionH.y
     
     def chasserHerbe(self):
         pass
@@ -181,35 +214,39 @@ class Herbivore(pygame.sprite.Sprite, Animals):
         pass
     
     def update(self):
-        directions = {"S":((-1,2),(1,self.speed)),"SW":((-self.speed,-1),(1,self.speed)),"W":((-self.speed,-1),(-1,2)),"NW":((-self.speed,-1),(-self.speed,-1)),"N":((-1,2),(-self.speed,-1)),"NE":((1,self.speed),(-self.speed,-1)),"E":((1,self.speed),(-1,2)),"SE":((1,self.speed),(1,self.speed))} #((min x, max x)(min y, max y))
-        directionsName = ("S","SW","W","NW","N","NE","E","SE") #possible directions
-        if random.randrange(0,5) == 2: #move about once every 5 frames
-            if self.direction == None: #if no direction is set, set a random one
-                self.direction = random.choice(directionsName)
-            else:
-                a = directionsName.index(self.direction) #get the index of direction in directions list
-                b = random.randrange(a-1,a+2) #set the direction to be the same, or one next to the current direction
-                if b > len(directionsName)-1: #if direction index is outside the list, move back to the start
-                    b = 0
-                self.direction = directionsName[b]
-            self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
-            self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative y to a random number between min y and max y
-        if self.rect.x < 5 or self.rect.x > WIDTH - 5 or self.rect.y < 5 or self.rect.y > HEIGHT - 5: #if cell is near the border of the screen, change direction
-            if self.rect.x < 5:
-                self.direction = "E"
-            elif self.rect.x > WIDTH - 5:
-                self.direction = "W"
-            elif self.rect.y < 5:
-                self.direction = "S"
-            elif self.rect.y > HEIGHT - 5:
-                self.direction = "N"
-            self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
-            self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
-        if self.move[0] != None: #add the relative coordinates to the cells coordinates
-            self.rect.x += self.move[0]
-            self.zoneVisionH.x += self.move[0]
-            self.rect.y += self.move[1]
-            self.zoneVisionH.y += self.move[1]
+        if self.hp > 0:    
+            directions = {"S":((-1,2),(1,self.speed)),"SW":((-self.speed,-1),(1,self.speed)),"W":((-self.speed,-1),(-1,2)),"NW":((-self.speed,-1),(-self.speed,-1)),"N":((-1,2),(-self.speed,-1)),"NE":((1,self.speed),(-self.speed,-1)),"E":((1,self.speed),(-1,2)),"SE":((1,self.speed),(1,self.speed))} #((min x, max x)(min y, max y))
+            directionsName = ("S","SW","W","NW","N","NE","E","SE") #possible directions
+            if random.randrange(0,5) == 2: #move about once every 5 frames
+                if self.direction == None: #if no direction is set, set a random one
+                    self.direction = random.choice(directionsName)
+                else:
+                    a = directionsName.index(self.direction) #get the index of direction in directions list
+                    b = random.randrange(a-1,a+2) #set the direction to be the same, or one next to the current direction
+                    if b > len(directionsName)-1: #if direction index is outside the list, move back to the start
+                        b = 0
+                    self.direction = directionsName[b]
+                self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
+                self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative y to a random number between min y and max y
+            if self.rect.x < 5 or self.rect.x > WIDTH - 5 or self.rect.y < 5 or self.rect.y > HEIGHT - 5: #if cell is near the border of the screen, change direction
+                if self.rect.x < 5:
+                    self.direction = "E"
+                elif self.rect.x > WIDTH - 5:
+                    self.direction = "W"
+                elif self.rect.y < 5:
+                    self.direction = "S"
+                elif self.rect.y > HEIGHT - 5:
+                    self.direction = "N"
+                self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
+                self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
+            if self.move[0] != None: #add the relative coordinates to the cells coordinates
+                self.rect.x += self.move[0]
+                self.zoneVisionH.x += self.move[0]
+                self.rect.y += self.move[1]
+                self.zoneVisionH.y += self.move[1]
+        else: 
+            return
+            
  
         pygame.draw.rect(screen, (0, 255, 0), self.zoneVisionH)
     
@@ -221,12 +258,14 @@ herb_group = pygame.sprite.Group()
 
 #-------------------------Creating objetcs automatically------------------------------------------
 objC = list()
-for i in range(5):
+number_of_Carnivores = range(5)
+number_of_Herbivores = range(5)
+for i in number_of_Carnivores:
     objC.append(Carnivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), white))
     carn_group.add(objC[i])
 
 objH = list()
-for i in range(5):
+for i in number_of_Herbivores:
     objH.append(Herbivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), blue))
     herb_group.add(objH[i])
  
@@ -234,16 +273,53 @@ for i in range(5):
 collision_tolerance = 10
 #Repeat this for every animal
 def hunt():
-    max_len = len(objH) + len(objC)
-    for i in range(max_len):  #how to access object attribute of object inside list
-        if abs(dir(objH[1::].visionZoneH(1)) - dir(objC[::-1].visionZoneC(2))) < collision_tolerance:  #1:: => from 1 to end of list, ::-1 from end to start of list
-            setattr(dir(objC[::-1]), dir(objC[::-1].getSpeed()), dir(objH[::-1].getSpeed()))   #setattr(object, attribute to be changed, new attribute value)
-        if abs(objH[1::].visionZoneH(2) - objC[::-1].visionZoneC(1)) < collision_tolerance:
-            print('bottom top')
-        if abs(objH[1::].visionZoneH(4) - objC[::-1].visionZoneC(3)) < collision_tolerance:
-            print('left right')
-        if abs(objH[1::].visionZoneH(3) - objC[::-1].visionZoneC(4)) < collision_tolerance:
-            print('right left')
+    for i in number_of_Carnivores:
+        for j in number_of_Herbivores:
+            if abs(objH[j].visionZoneH(1) - objC[i].visionZoneC(2)) < collision_tolerance:  #1:: => from 1 to end of list, ::-1 from end to start of list
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(1)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(3)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(4)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+
+def chasser():
+    for i in number_of_Carnivores:
+        for j in number_of_Herbivores:
+            if abs(objH[j].visionZoneH(1) - objC[i].visionZoneC(2)) < collision_tolerance:  #1:: => from 1 to end of list, ::-1 from end to start of list
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(1)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(3)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+            if abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(4)) < collision_tolerance:
+                objC[i].rect.x = objH[j].rect.x
+                objC[i].rect.y = objH[j].rect.y
+                objC[i].set_x(objH[j].get_x()) 
+                objC[i].set_y(objH[j].get_y()) 
+
 
 #----------------------------------Mainloop----------------------------------------------------------
 def mainloop():
@@ -256,9 +332,9 @@ def mainloop():
 
         #Update
         screen.fill(0)
+        hunt()
         carn_group.update()
         herb_group.update()
-        hunt()
 
         #Draw/render
         carn_group.draw(screen)
