@@ -248,7 +248,10 @@ class Herbivore(pygame.sprite.Sprite, Animals):
         return self.rect.y
 
     def set_color(self):
-        self.color = red
+        self.image.fill(red)
+    
+    def get_color(self):
+        return self.color 
 
     def set_hp(self):
         self.hp = 0
@@ -301,8 +304,8 @@ herb_group = pygame.sprite.Group()
 
 #-------------------------Creating objetcs automatically------------------------------------------
 objC = list()
-number_of_Carnivores = range(1)
-number_of_Herbivores = range(1)
+number_of_Carnivores = range(2)
+number_of_Herbivores = range(5)
 for i in number_of_Carnivores:
     objC.append(Carnivore(20, 20, random.randrange(10, 630), random.randrange(10, 470), white))
     carn_group.add(objC[i])
@@ -319,57 +322,42 @@ collision_tolerance = 100
 def hunt():
     for i in number_of_Carnivores:
         for j in number_of_Herbivores:
-            if abs(objH[j].visionZoneH(1) - objH[j].visionZoneH(2)) < collision_tolerance:
-                print('condition 1') 
-                if abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(3)) < collision_tolerance:
-                    print('condition 2') 
-                    if abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(4)) < collision_tolerance:
-                        print('condition 3')  
-                        objC[i].rect.x = objH[j].rect.x
-                        objC[i].rect.y = objH[j].rect.y
-                        objC[i].set_x(objH[j].get_x()) 
-                        objC[i].set_y(objH[j].get_y()) 
+            if objH[j].get_hp() > 0:
+                if abs(objH[j].visionZoneH(1) - objC[i].visionZoneC(2)) < collision_tolerance & abs(objC[i].visionZoneC(4) - objH[j].visionZoneH(3)) < collision_tolerance & abs(objC[i].visionZoneC(3) < objH[j].visionZoneH(4)) < collision_tolerance: 
+                    objC[i].rect.x = objH[j].rect.x
+                    objC[i].rect.y = objH[j].rect.y
+                    objC[i].set_x(objH[j].get_x()) 
+                    objC[i].set_y(objH[j].get_y()) 
 
-                        objH[j].set_hp()
-                        objH[j].set_color()
-            elif abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(1)) < collision_tolerance:
-                print('condition 1') 
-                if abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(3)) < collision_tolerance:
-                    print('condition 2') 
-                    if abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(4)) < collision_tolerance:
-                        print('condition 3') 
-                        objC[i].rect.x = objH[j].rect.x
-                        objC[i].rect.y = objH[j].rect.y
-                        objC[i].set_x(objH[j].get_x()) 
-                        objC[i].set_y(objH[j].get_y()) 
+                    objH[j].set_hp()
+                    objH[j].set_color()
 
-                        objH[j].set_hp()
-                        objH[j].set_color()
-            elif abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(3)) < collision_tolerance:
-                print('condition 1') 
-                if abs(objH[j].visionZoneH(1) - objC[i].visionZoneC(1)) < collision_tolerance:
-                    print('condition 2') 
-                    if abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(2)) < collision_tolerance:
-                        objC[i].rect.x = objH[j].rect.x
-                        objC[i].rect.y = objH[j].rect.y
-                        objC[i].set_x(objH[j].get_x()) 
-                        objC[i].set_y(objH[j].get_y()) 
+                if abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(1)) < collision_tolerance & abs(objC[i].visionZoneC(4) - objH[j].visionZoneH(3)) < collision_tolerance & abs(objC[i].visionZoneC(3) < objH[j].visionZoneH(4)) < collision_tolerance:
+                    objC[i].rect.x = objH[j].rect.x
+                    objC[i].rect.y = objH[j].rect.y
+                    objC[i].set_x(objH[j].get_x()) 
+                    objC[i].set_y(objH[j].get_y()) 
 
-                        objH[j].set_hp()
-                        objH[j].set_color()
-            elif abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(4)) < collision_tolerance:
-                print('condition 1') 
-                if abs(objH[j].visionZoneH(1) - objC[i].visionZoneC(1)) < collision_tolerance:
-                    print('condition 2') 
-                    if abs(objH[j].visionZoneH(2) - objC[i].visionZoneC(2)) < collision_tolerance:
-                        print('condition 3') 
-                        objC[i].rect.x = objH[j].rect.x
-                        objC[i].rect.y = objH[j].rect.y
-                        objC[i].set_x(objH[j].get_x()) 
-                        objC[i].set_y(objH[j].get_y()) 
+                    objH[j].set_hp()
+                    objH[j].set_color()
 
-                        objH[j].set_hp()
-                        objH[j].set_color()
+                if abs(objH[j].visionZoneH(4) - objC[i].visionZoneC(3)) < collision_tolerance & abs(objC[i].visionZoneC(2) - objH[j].visionZoneH(1)) < collision_tolerance & abs(objC[i].visionZoneC(1) - objH[j].visionZoneH(2)) < collision_tolerance :
+                    objC[i].rect.x = objH[j].rect.x
+                    objC[i].rect.y = objH[j].rect.y
+                    objC[i].set_x(objH[j].get_x()) 
+                    objC[i].set_y(objH[j].get_y()) 
+
+                    objH[j].set_hp()
+                    objH[j].set_color()
+
+                if abs(objH[j].visionZoneH(3) - objC[i].visionZoneC(4)) < collision_tolerance & abs(objC[i].visionZoneC(2) - objH[j].visionZoneH(1)) < collision_tolerance & abs(objC[i].visionZoneC(1) - objH[j].visionZoneH(2)) < collision_tolerance :
+                    objC[i].rect.x = objH[j].rect.x
+                    objC[i].rect.y = objH[j].rect.y
+                    objC[i].set_x(objH[j].get_x()) 
+                    objC[i].set_y(objH[j].get_y()) 
+
+                    objH[j].set_hp()
+                    objH[j].set_color()
 
 
 #----------------------------------Mainloop----------------------------------------------------------
