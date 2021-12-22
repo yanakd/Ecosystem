@@ -273,8 +273,8 @@ class Herbivore(pygame.sprite.Sprite, Animals):
                     if b > len(directionsName)-1: #if direction index is outside the list, move back to the start
                         b = 0
                     self.direction = directionsName[b]
-                self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
-                self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative y to a random number between min y and max y
+                self.move[0] = random.randint(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
+                self.move[1] = random.randint(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative y to a random number between min y and max y
             if self.rect.x < 5 or self.rect.x > WIDTH - 5 or self.rect.y < 5 or self.rect.y > HEIGHT - 5: #if cell is near the border of the screen, change direction
                 if self.rect.x < 5:
                     self.direction = "E"
@@ -284,8 +284,8 @@ class Herbivore(pygame.sprite.Sprite, Animals):
                     self.direction = "S"
                 elif self.rect.y > HEIGHT - 5:
                     self.direction = "N"
-                self.move[0] = random.randrange(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
-                self.move[1] = random.randrange(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
+                self.move[0] = random.randint(directions[self.direction][0][0],directions[self.direction][0][1]) #change relative x to a random number between min x and max x
+                self.move[1] = random.randint(directions[self.direction][1][0],directions[self.direction][1][1]) #change relative x to a random number between min x and max x
             if self.move[0] != None: #add the relative coordinates to the cells coordinates
                 self.rect.x += self.move[0]
                 self.zoneVisionH.x += self.move[0]
