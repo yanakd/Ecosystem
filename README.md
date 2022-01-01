@@ -4,6 +4,8 @@
 
 ## Diagramme de classe
 
+![Diagramme de classe](Classes.png)
+
 ## Principes SOLID
 
 Lors de l’élaboration de notre projet nous avons décidé de respecter les 2 premiers principes de l’acronyme SOLID : Single responsability et Open/Close principle. 
