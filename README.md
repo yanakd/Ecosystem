@@ -1,6 +1,7 @@
 # Programmation orientée objet: Rapport de projet: Ecosystème
 
-## Diagramme de séquences
+## Diagramme de séquences: mainloop()
+![Diagramme de séquences](Sequences.png)
 
 ## Diagramme de classe
 
